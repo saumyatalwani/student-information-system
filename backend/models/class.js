@@ -18,6 +18,10 @@ const classSchema = new mongoose.Schema({
         type: Number,
         required: true  
     },
+    credits : {
+        type : Number,
+        required : true
+    },
     semester : {
         type : String,
         required : true
@@ -34,6 +38,11 @@ const classSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    },
+    type : {
+        type : String,
+        required : true,
+        enum : ['Lab','Theory']
     }
 });
 

@@ -24,7 +24,7 @@ router.post('/generate', async (req, res) => {
     try {
         const { startDate, endDate } = req.body;
 
-        const start = new Date(startDate, format);
+        const start = new Date(startDate);
         const end = new Date(endDate);
 
         if (start > end) {
@@ -70,16 +70,18 @@ router.post('/generate', async (req, res) => {
 
 router.post("/add", async(req,res)=>{
     try{
-        const { subject, subjectCode, faculty, division, day, time,batch,semester} = req.body
+        const { subject, subjectCode, faculty, division, day, time,batch,semester,type,credits} = req.body
         const cls = new Lecture({
             subject,
             subjectCode,
             faculty : new mongoose.Types.ObjectId(faculty),
             division,
             day,
+            credits,
             time,
             batch,
-            semester
+            semester,
+            type
         })
 
         await cls.save();
