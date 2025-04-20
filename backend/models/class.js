@@ -31,11 +31,11 @@ const classSchema = new mongoose.Schema({
         required: true
     },
     time: {
-        type: String,
+        type: [String],
         required: true, // e.g., "10:00 AM"
     },
     day: {
-        type: String,
+        type: [String],
         required: true,
         enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     },
@@ -50,6 +50,10 @@ const attendanceSessionSchema = new mongoose.Schema({
     classRef: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Class',
+        required: true
+    },
+    time: {
+        type: String, // e.g., "10:00"
         required: true
     },
     date: {

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const express = require('express');
-const { AttendanceSession } = require("../models/class");
+const { AttendanceSession,Lecture } = require("../models/class");
 const { finalGrade } = require("../models/grades")
 
 const router = express.Router();
@@ -112,6 +112,7 @@ router.get('/attendance/subject', async (req, res) => {
                 $group: {
                     _id: "$classRef",  // Group by classRef (subject)
                     totalClasses: { $sum: 1 },  // Count total classes for this subject
+                    subjectName: { $first: "$classData.subject" },
                     classes: { $push: { 
                         date: "$date",  // Use the date from AttendanceSession
                         attended: { 
@@ -122,6 +123,7 @@ router.get('/attendance/subject', async (req, res) => {
             }
         ]);
 
+        console.log(classes);
         // Calculate the attendance percentage for the individual subject
         let totalClassesCount = 0;
         let attendedClassesCount = 0;
@@ -143,12 +145,12 @@ router.get('/attendance/subject', async (req, res) => {
         });
 
         const attendancePercentage = (attendedClassesCount / totalClassesCount) * 100;
-
         // Return the result with the structure you need
         const payload = {
             totalClasses: totalClassesCount,
             attendedClasses: attendedClassesCount,
             totalAttendancePercentage: attendancePercentage,
+            subject: classes[0]?.subjectName ?? "Unknown Subject",
             attendanceDetails // Include only the date and attendance status
         };
 
@@ -166,10 +168,14 @@ function calculateGrades(grades){
     var totalCredits = 0
     var creditsObtained = 0
 
+    console.log(grades);
+
     for ( const grade of grades ){
         var course = { 
             "totalMarks": grade.totalMarks, 
-            "marksObtained" : grade.marksObtained, 
+            "marksObtained" : grade.marksObtained,
+            "subjectCode" : grade.classData.subjectCode,
+            "subjectName": grade.classData.subject
         }
         const marksObtained = grade.marksObtained
         var gradePoint = 10
@@ -219,7 +225,7 @@ function calculateGrades(grades){
 
 router.get('/grades', async (req,res) => {
     try{
-        const {id, sem}= req.query;
+        const {id, sem}=req.query;
         const grades = await finalGrade.aggregate([
             {
                 $match : {
@@ -251,11 +257,65 @@ router.get('/grades', async (req,res) => {
               }
         ])
 
+        console.log(grades);
+
         const calculated = calculateGrades(grades);
         res.status(200).json(calculated);
     } catch (err){
         res.status(500).json({message : err.message})
     }
 })
+function mapLecturesToCalendarFormat(lectures) {
+    return lectures.flatMap((lecture) => {
+      return lecture.day.map((day, idx) => {
+        const timeStr = lecture.time[idx];
+        const hour = convertTo24Hour(timeStr);
+        const duration = lecture.type === "Theory" ? 1 : 2;
+  
+        return {
+          subject: lecture.subject,
+          day: day,
+          start: hour,
+          end: hour + duration,
+          location: lecture.type,
+        };
+      });
+    });
+  }
+  
+  // Helper to convert "10:00 AM" => 10, "2:00 PM" => 14
+  function convertTo24Hour(timeStr) {
+    const [time, modifier] = timeStr.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+  
+    if (modifier === "PM" && hours !== 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+  
+    return hours;
+  }
+  
+
+router.get('/schedule', async (req, res) => {
+    try {
+      const { div, semester } = req.query;
+  
+      if (!div || !semester) {
+        return res.status(400).json({ error: "Missing division or semester in query." });
+      }
+  
+      const classes = await Lecture.find({
+        division: div.toString(),
+        semester: semester,
+      });
+      
+  
+      const data = mapLecturesToCalendarFormat(classes);
+      res.status(200).json(data);
+    } catch (err) {
+      console.error("Error fetching schedule:", err);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+  
 
 module.exports = router;

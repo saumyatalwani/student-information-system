@@ -2,6 +2,7 @@ const express = require('express');
 const {Lecture,AttendanceSession} = require('../models/class');
 const { mongoose } = require('mongoose');
 const router = express.Router()
+const moment = require('moment-timezone');
 
 function getDatesForWeekday(startDate, endDate, weekday) {
     const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(weekday);
@@ -32,31 +33,46 @@ router.post('/generate', async (req, res) => {
         }
 
         const allClasses = await Lecture.find();
-
         let count = 0;
 
         for (const classItem of allClasses) {
-            const sessionDates = getDatesForWeekday(start, end, classItem.day);
+            const { day: days, time: times } = classItem;
 
-            for (const date of sessionDates) {
-                const existing = await AttendanceSession.findOne({
-                    classRef: classItem._id,
-                    date: {
-                        $gte: new Date(date.setHours(0, 0, 0, 0)),
-                        $lt: new Date(date.setHours(23, 59, 59, 999))
-                    }
-                });
+            for (let i = 0; i < days.length; i++) {
+                const weekday = days[i];
+                const sessionDates = getDatesForWeekday(start, end, weekday); // List of Dates (JS Date objects)
 
-                if (!existing) {
-                    const newSession = new AttendanceSession({
+                for (const dateOnly of sessionDates) {
+                    const [hour, minute] = times[i].split(':').map(Number);
+
+                    // Create a moment in IST timezone
+                    const dateTimeIST = moment.tz(dateOnly, 'Asia/Kolkata')
+                        .hour(hour)
+                        .minute(minute)
+                        .second(0)
+                        .millisecond(0);
+
+                    const existing = await AttendanceSession.findOne({
                         classRef: classItem._id,
-                        date: new Date(date),
-                        presentStudents: [],
-                        absentStudents: []
+                        date: {
+                            $gte: dateTimeIST.clone().startOf('day').toDate(),
+                            $lt: dateTimeIST.clone().endOf('day').toDate()
+                        },
+                        time: times[i]
                     });
 
-                    await newSession.save();
-                    count++;
+                    if (!existing) {
+                        const newSession = new AttendanceSession({
+                            classRef: classItem._id,
+                            date: dateTimeIST.toDate(), // Full IST datetime
+                            time: times[i],
+                            presentStudents: [],
+                            absentStudents: []
+                        });
+
+                        await newSession.save();
+                        count++;
+                    }
                 }
             }
         }
@@ -68,29 +84,39 @@ router.post('/generate', async (req, res) => {
     }
 });
 
-router.post("/add", async(req,res)=>{
-    try{
-        const { subject, subjectCode, faculty, division, day, time,batch,semester,type,credits} = req.body
+router.post("/add", async (req, res) => {
+    try {
+        let { subject, subjectCode, faculty, division, day, time, batch, semester, type, credits } = req.body;
+
+        // Split comma-separated day/time into arrays and trim whitespace
+        const daysArray = day.split(',').map(d => d.trim());
+        const timesArray = time.split(',').map(t => t.trim());
+
+        if (daysArray.length !== timesArray.length) {
+            return res.status(400).json({ error: "Number of days and times must match." });
+        }
+
         const cls = new Lecture({
             subject,
             subjectCode,
-            faculty : new mongoose.Types.ObjectId(faculty),
+            faculty: new mongoose.Types.ObjectId(faculty),
             division,
-            day,
-            credits,
-            time,
+            day: daysArray,
+            time: timesArray,
             batch,
             semester,
-            type
-        })
+            type,
+            credits
+        });
 
         await cls.save();
 
-        res.status(201).json({message : "Lecture Added Successfully!"})
-    } catch(err){
-        res.status(500).json({error : err.message})
+        res.status(201).json({ message: "Lecture Added Successfully!" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-})
+});
+
 
 router.post("/addAttendance", async (req,res)=> {
     try {
