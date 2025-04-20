@@ -29,20 +29,19 @@ router.post('/register/student',async (req,res) => {
     }
 })
 
-router.post('/register/parent',async (req,res) => {
+router.post('/register/user',async (req,res) => {
     try{
-        const {email, password, rollNo, division, firstName, lastName}=req.body
+        const {email, password, firstName, lastName}=req.body
         const hashPassword = await bcrypt.hash(password,10);
-        const stud = new Student({
+        const stud = new User({
             email : email,
             password: hashPassword,
-            rollNo : rollNo,
-            division: division,
+            role : 'user',
             ...(firstName && { firstName }),
             ...(lastName && { lastName }),
         })
         await stud.save();
-        res.status(201).json({message: "Parent Created Successfully!"})
+        res.status(201).json({message: "User Created Successfully!"})
     } catch (err){
         console.log(err); //remove this at the end
         if(err.code == 11000){
