@@ -19,8 +19,8 @@ export default function AdminDashboard(){
                 Add Class <ArrowUpRightIcon size={20} className="ml-1" />
             </Link>
                 
-            <Link to={'/admin/generateGrades'} className="inline-flex items-center font-medium">
-                Generate Grades <ArrowUpRightIcon size={20} className="ml-1" />
+            <Link to={'/admin/generate'} className="inline-flex items-center font-medium">
+                Generate <ArrowUpRightIcon size={20} className="ml-1" />
             </Link>
             </div>
         </div>

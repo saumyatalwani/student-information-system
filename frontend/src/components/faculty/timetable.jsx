@@ -48,7 +48,7 @@ export default function Calendar() {
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={handlePrevWeek}
-          className="text-xl font-semibold px-2 hover:text-blue-600"
+          className="text-xl font-semibold px-2 hover:text-indigo-600"
         >
           ←
         </button>
@@ -58,7 +58,7 @@ export default function Calendar() {
         </h2>
         <button
           onClick={handleNextWeek}
-          className="text-2xl font-semibold px-2 hover:text-blue-600"
+          className="text-2xl font-semibold px-2 hover:text-indigo-600"
         >
           →
         </button>
@@ -119,7 +119,7 @@ export default function Calendar() {
                   return (
                     <div
                       key={index + hour}
-                      className="bg-blue-100 border border-blue-200 rounded-xl shadow-sm p-2 m-1 text-xs flex flex-col justify-center"
+                      className="bg-indigo-100 border border-indigo-200 rounded-xl shadow-sm p-2 m-1 text-xs flex flex-col justify-center"
                       style={{ gridRow: `span ${duration}` }}
                     >
                       <div className="font-semibold text-sm">

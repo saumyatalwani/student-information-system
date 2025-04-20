@@ -62,7 +62,7 @@ export default function AddFaculty() {
           <input
             type="email"
             name="email"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             value={formData.email}
             onChange={handleChange}
             required
@@ -74,7 +74,7 @@ export default function AddFaculty() {
           <input
             type="password"
             name="password"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             value={formData.password}
             onChange={handleChange}
             required

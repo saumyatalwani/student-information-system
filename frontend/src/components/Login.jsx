@@ -58,7 +58,7 @@ export default function Login (){
         <input
           type="email"
           placeholder="Email"
-          className="w-full px-4 py-2 mb-4 border rounded"
+          className="w-full px-4 py-2 mb-4 rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -67,7 +67,7 @@ export default function Login (){
         <input
           type="password"
           placeholder="Password"
-          className="w-full px-4 py-2 mb-4 border rounded"
+          className="w-full px-4 py-2 mb-4 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -75,7 +75,7 @@ export default function Login (){
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
         >
           Login
         </button>

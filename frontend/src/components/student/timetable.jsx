@@ -50,7 +50,7 @@ export default function Calendar() {
                 <div
                   key={day + hour}
                   style={{ gridRow: `span ${duration}` }}
-                  className="bg-blue-100 border rounded-xl text-xs p-2"
+                  className="bg-indigo-100 border rounded-xl text-xs p-2"
                 >
                   <div className="font-semibold">{classItem.subject}</div>
                   <div className="text-[10px] text-gray-600">{classItem.location}</div>

@@ -54,16 +54,20 @@ export default function AddStudent() {
   };
 
   return (
-    <div className="pl-10 pt-5">
+    <div className="pl-10 pt-5 pr-10">
       <Link to={"/admin"} className="inline-flex items-center"><ChevronLeftIcon />Back</Link>
-      <h1 className="text-4xl font-bold mb-6">Add Student</h1>
+      
+      <div className="flex items-center">
+        <h1 className="text-4xl font-bold mb-6">Add Student</h1>
+        <Link to={"/admin/add/student/bulk"} className="ml-auto inline-flex items-center bg-indigo-600 text-white rounded p-3">Add Bulk</Link>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
         <div>
           <label className="block mb-1 font-medium">Email *</label>
           <input
             type="email"
             name="email"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             value={formData.email}
             onChange={handleChange}
             required
@@ -75,7 +79,7 @@ export default function AddStudent() {
           <input
             type="password"
             name="password"
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             value={formData.password}
             onChange={handleChange}
             required

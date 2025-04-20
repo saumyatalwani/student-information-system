@@ -14,6 +14,10 @@ import GradesViewList from "./components/faculty/GradesViewList";
 import GradesView from "./components/faculty/GradesView";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AddFaculty from "./components/admin/AddFaculty";
+import AddStudent from "./components/admin/AddStudent";
+import AddStudentBulk from "./components/admin/AddStudentBulk";
+import AddClass from "./components/admin/AddClass";
+import Generate from "./components/admin/Generate";
 
 function App() {
 
@@ -38,6 +42,10 @@ function App() {
       <Route path="/admin" element={<ProtectedRoute allowedRoles={['user']} />}>
         <Route path="" element={<AdminDashboard/>}/>
         <Route path="add/faculty" element={<AddFaculty/>}/>
+        <Route path="add/student" element={<AddStudent/>}/>
+        <Route path="add/student/bulk" element={<AddStudentBulk/>}/>
+        <Route path="add/class" element={<AddClass/>}/>
+        <Route path="generate" element={<Generate/>}/>
       </Route>
     </Routes>
     </>

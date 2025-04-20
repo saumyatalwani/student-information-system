@@ -16,7 +16,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   return <>
-  <Header name={user.firstName+" "+user.lastName}/>
+  <Header name={user.firstName ? user.firstName+" "+user.lastName : "User"}/>
   <Outlet />
   </>;
 };
