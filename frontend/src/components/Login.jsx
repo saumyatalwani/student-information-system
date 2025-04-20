@@ -30,6 +30,9 @@ export default function Login (){
         case "student":
           navigate("/student");
           break;
+        case "user":
+          navigate("/admin");
+          break;
         default:
           navigate("/");
       }

@@ -12,6 +12,8 @@ import GradesPage from "./components/faculty/GradesPage";
 import GradeUpload from "./components/faculty/GradeUpload";
 import GradesViewList from "./components/faculty/GradesViewList";
 import GradesView from "./components/faculty/GradesView";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import AddFaculty from "./components/admin/AddFaculty";
 
 function App() {
 
@@ -32,6 +34,10 @@ function App() {
         <Route path="grade/upload/:id" element={<GradeUpload/>}/>
         <Route path="grade/view/" element={<GradesViewList/>}/>
         <Route path="grade/view/:id" element={<GradesView/>}/>
+      </Route>
+      <Route path="/admin" element={<ProtectedRoute allowedRoles={['user']} />}>
+        <Route path="" element={<AdminDashboard/>}/>
+        <Route path="add/faculty" element={<AddFaculty/>}/>
       </Route>
     </Routes>
     </>
