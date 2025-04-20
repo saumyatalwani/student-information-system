@@ -1,33 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Routes, Route } from "react-router-dom";
 import './App.css'
+import Login from "./components/Login";
+import ProtectedRoute from "./components/ProtectedRoute"
+import StudentDashboard from "./components/student/Dashboard";
+import AttendancePage from "./components/student/AttndPage";
+import SubjectAttendancePage from "./components/student/subAttnd";
+import StudGrades from "./components/student/grades";
+import FacultyDashboard from "./components/faculty/Dashboard";
+import AttendanceUpload from "./components/faculty/AttendanceUpload";
+import GradesPage from "./components/faculty/GradesPage";
+import GradeUpload from "./components/faculty/GradeUpload";
+import GradesViewList from "./components/faculty/GradesViewList";
+import GradesView from "./components/faculty/GradesView";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <Routes>
+      <Route path="/login" element={<Login />}/>
+      <Route path="/student" element={<ProtectedRoute allowedRoles={['student']} />}>
+        <Route path="" element={<StudentDashboard/>}></Route>
+        <Route path="attendance" element={<AttendancePage/>}></Route>
+        <Route path="attendance/:id" element={<SubjectAttendancePage/>}></Route>
+        <Route path="grades/" element={<StudGrades/>}></Route>
+      </Route>
+      <Route path="/faculty" element={<ProtectedRoute allowedRoles={['faculty']} />}>
+        <Route path="" element={<FacultyDashboard/>}/>
+        <Route path="attendance/upload/:id" element={<AttendanceUpload/>}/>
+        <Route path="grade/upload/" element={<GradesPage/>}/>
+        <Route path="grade/upload/:id" element={<GradeUpload/>}/>
+        <Route path="grade/view/" element={<GradesViewList/>}/>
+        <Route path="grade/view/:id" element={<GradesView/>}/>
+      </Route>
+    </Routes>
     </>
   )
 }
