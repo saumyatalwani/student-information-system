@@ -35,14 +35,16 @@ router.post('/generate', async (req, res) => {
         const allClasses = await Lecture.find();
         let count = 0;
 
+        // Loop through each class
         for (const classItem of allClasses) {
             const { day: days, time: times } = classItem;
 
+            // Process each day and corresponding time in parallel
             for (let i = 0; i < days.length; i++) {
                 const weekday = days[i];
                 const sessionDates = getDatesForWeekday(start, end, weekday); // List of Dates (JS Date objects)
 
-                for (const dateOnly of sessionDates) {
+                const tasks = sessionDates.map(async (dateOnly) => {
                     const [hour, minute] = times[i].split(':').map(Number);
 
                     // Create a moment in IST timezone
@@ -61,6 +63,7 @@ router.post('/generate', async (req, res) => {
                         time: times[i]
                     });
 
+                    // If no existing session, create a new one
                     if (!existing) {
                         const newSession = new AttendanceSession({
                             classRef: classItem._id,
@@ -71,12 +74,19 @@ router.post('/generate', async (req, res) => {
                         });
 
                         await newSession.save();
-                        count++;
+                        return 1; // Session created
                     }
-                }
+
+                    return 0; // No session created (already exists)
+                });
+
+                // Execute all session creation tasks for the current day
+                const results = await Promise.all(tasks);
+                count += results.reduce((acc, val) => acc + val, 0); // Count the number of sessions created
             }
         }
 
+        // Return a success response with the count of created sessions
         res.status(201).json({ message: `Generated ${count} attendance sessions for semester.` });
     } catch (err) {
         console.error(err);

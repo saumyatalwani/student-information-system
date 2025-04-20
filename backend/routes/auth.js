@@ -29,6 +29,49 @@ router.post('/register/student',async (req,res) => {
     }
 })
 
+router.post('/register/students/bulk', async (req, res) => {
+    try {
+        const students = req.body; // expecting an array
+
+        if (!Array.isArray(students) || students.length === 0) {
+            return res.status(400).json({ error: 'Invalid input. Expected an array of students.' });
+        }
+
+        const hashedStudentsPromises = students.map(async ({ email, password, rollNo, division, firstName, lastName }) => {
+            const hashPassword = await bcrypt.hash(password, 10);
+            return {
+                email,
+                password: hashPassword,
+                rollNo,
+                division,
+                ...(firstName && { firstName }),
+                ...(lastName && { lastName }),
+            };
+        });
+
+        const hashedStudents = await Promise.all(hashedStudentsPromises);
+
+        const result = await Student.insertMany(hashedStudents, { ordered: false });
+
+        res.status(201).json({
+            message: `${result.length} students registered successfully.`,
+            insertedCount: result.length
+        });
+    } catch (err) {
+        console.log(err); // Remove in production
+
+        if (err.code === 11000 || err.writeErrors) {
+            const duplicates = err.writeErrors?.filter(e => e.code === 11000).length || 0;
+            return res.status(400).json({
+                error: `Some students could not be registered due to duplicate emails or roll numbers.`,
+                duplicateCount: duplicates
+            });
+        }
+
+        res.status(500).json({ error: 'Bulk student registration failed.' });
+    }
+});
+
 router.post('/register/user',async (req,res) => {
     try{
         const {email, password, firstName, lastName}=req.body
