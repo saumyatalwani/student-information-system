@@ -46,9 +46,15 @@ export default function Grades() {
   useEffect(() => {
     const fetchGrades = async () => {
       try {
+        const config = {
+          headers: { 
+            'Authorization': `Bearer ${localStorage.getItem("token")}`,
+          }
+        };
+        
         const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
         const url = `${BACKEND_URL}/studentView/grades?id=${user._id}&sem=${sem}`;
-        const res = await axios.get(url);
+        const res = await axios.get(url,config);
         setGradesData(res.data);
       } catch (err) {
         console.error("Failed to fetch grades:", err);

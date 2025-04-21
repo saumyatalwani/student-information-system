@@ -13,10 +13,13 @@ export default function SubjectAttendancePage(){
     
           try {
             const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+            const config = {
+              headers: { 
+                'Authorization': `Bearer ${localStorage.getItem("token")}`,
+              }
+            };
             const url = `${BACKEND_URL}/studentView/attendance/subject?div=${user.division}&id=${user._id}&subjectRef=${id}`
-            const response = await axios.get(
-              url
-            );
+            const response = await axios.get(url,config);
             setAttendanceData(response.data);
           } catch (error) {
             console.error("Error fetching attendance data:", error);

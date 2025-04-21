@@ -4,6 +4,13 @@ import axios from "axios";
 import { getUserFromToken } from "../../utils/auth";
 import { Link } from "react-router-dom";
 
+const config = {
+  headers: { 
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+};
+
+
 export default function AttendancePage() {
   const [attendanceData, setAttendanceData] = useState(null);
 
@@ -15,7 +22,7 @@ export default function AttendancePage() {
         const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
         const response = await axios.get(
           `${BACKEND_URL}/studentView/attendance?div=${user.division}&id=${user._id}`
-        );
+        ,config);
         setAttendanceData(response.data);
       } catch (error) {
         console.error("Error fetching attendance data:", error);
@@ -38,9 +45,11 @@ export default function AttendancePage() {
       <div className="flex justify-center flex-col items-center">
         <AttendancePieChart data={attendanceData} />
         <p className="text-lg">
-          {attendanceData.totalAttendancePercentage.toFixed(2)}% -{" "}
-          {attendanceData.attendedClasses}/{attendanceData.totalClasses} Classes
+        {attendanceData?.totalAttendancePercentage != null
+          ? `${attendanceData.totalAttendancePercentage.toFixed(2)}% - ${attendanceData.attendedClasses}/${attendanceData.totalClasses} Classes`
+          : 'No Data'}
         </p>
+
       </div>
       <h1 className="text-xl font-semibold">Classes</h1>
       <div className="flex items-center justify-center flex-wrap">

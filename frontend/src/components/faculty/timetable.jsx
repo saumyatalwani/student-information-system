@@ -16,6 +16,9 @@ import { getUserFromToken } from "../../utils/auth";
 const hours = Array.from({ length: 9 }, (_, i) => 9 + i); // 9am to 5pm
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
+
+
+
 export default function Calendar() {
   // State for current week and class data
   const [currentWeek, setCurrentWeek] = useState(
@@ -24,11 +27,18 @@ export default function Calendar() {
   const [classes, setClasses] = useState([]);
   const user = getUserFromToken();
    const [sem, setSem] = useState(`${new Date().getMonth() <= 7 ? "Even" : "Odd"}-${new Date().getFullYear()}`);
-
+    const token = localStorage.getItem("token");
+   const config = {
+    headers: { 
+      'Authorization': `Bearer ${token}`,
+    }
+  };
+  
   useEffect(() => {
     const fetchData = async() =>{
       const BACKEND_URL=import.meta.env.VITE_BACKEND_URL
-      const response = await axios.get(`${BACKEND_URL}/facultyView/schedule?sem=${sem}&id=${user._id}`)
+      console.log(sem);
+      const response = await axios.get(`${BACKEND_URL}/facultyView/schedule?sem=${sem}&id=${user._id}`,config)
       setClasses(response.data);
     }
 

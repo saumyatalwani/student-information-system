@@ -3,6 +3,12 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const config = {
+  headers: { 
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+};
+
 export default function GradesView() {
   const { id } = useParams();
   const [grades, setGrades] = useState();
@@ -10,7 +16,7 @@ export default function GradesView() {
   useEffect(() => {
     const fetchData = async () => {
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.get(`${BACKEND_URL}/facultyView/grades?id=${id}`);
+      const response = await axios.get(`${BACKEND_URL}/facultyView/grades?id=${id}`,config);
       setGrades(response.data);
     };
     fetchData();

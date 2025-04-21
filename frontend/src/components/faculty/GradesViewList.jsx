@@ -3,6 +3,12 @@ import { getUserFromToken } from "../../utils/auth";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const config = {
+    headers: { 
+      'Authorization': `Bearer ${localStorage.getItem("token")}`,
+    }
+  };
+
 export default function GradesViewList(){
 
     const user = getUserFromToken();
@@ -12,7 +18,7 @@ export default function GradesViewList(){
     useEffect(()=>{
         const fetchData= async()=>{
             const BACKEND_URL=import.meta.env.VITE_BACKEND_URL
-            const response = await axios.get(`${BACKEND_URL}/facultyView/courses?id=${user._id}&sem=${sem}`)
+            const response = await axios.get(`${BACKEND_URL}/facultyView/courses?id=${user._id}&sem=${sem}`,config)
             setCoures(response.data)
         }
         fetchData();

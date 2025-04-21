@@ -3,6 +3,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeftIcon } from "@primer/octicons-react";
 
+const config = {
+  headers: { 
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+};
+
 export default function AddFaculty() {
   const [formData, setFormData] = useState({
     email: "",
@@ -11,6 +17,7 @@ export default function AddFaculty() {
     firstName: "",
     lastName: ""
   });
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +37,7 @@ export default function AddFaculty() {
   
     try {
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-      const res = await axios.post(`${BACKEND_URL}/auth/register/faculty`, formData);
+      const res = await axios.post(`${BACKEND_URL}/admin/register/faculty`, formData,config);
 
       console.log(res);
   

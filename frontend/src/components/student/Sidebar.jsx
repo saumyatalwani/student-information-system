@@ -14,8 +14,14 @@ export default function Sidebar() {
 
       try {
         const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+        const config = {
+          headers: { 
+            'Authorization': `Bearer ${localStorage.getItem("token")}`,
+          }
+        };
+        
         const response = await axios.get(
-          `${BACKEND_URL}/studentView/attendance?div=${user.division}&id=${user._id}`
+          `${BACKEND_URL}/studentView/attendance?div=${user.division}&id=${user._id}`,config
         );
         setAttendanceData(response.data);
       } catch (error) {
@@ -29,12 +35,19 @@ export default function Sidebar() {
   if (!attendanceData) {
     return <div className="pl-10 text-lg">Loading attendance...</div>;
   }
+
+
   
   return (
     <div className="bg-indigo-900 text-white w-[25vw] h-[70vh] p-5 rounded-3xl m-5 shadow-2xl">
       <h1 className="text-xl font-bold mb-10">Your Dashboard</h1>
       <div className="mb-6 space-y-2">
-        <h1>Attendance - {attendanceData.totalAttendancePercentage.toFixed(2)}%</h1>
+      <h1>
+        Attendance - {attendanceData?.totalAttendancePercentage != null 
+          ? attendanceData.totalAttendancePercentage.toFixed(2) + '%' 
+          : 'No Data'}
+        </h1>
+
         <AttendancePieChart data={attendanceData}/>
         <Link to={'/student/attendance'}>View Detailed</Link>
       </div>

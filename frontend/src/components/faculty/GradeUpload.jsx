@@ -3,6 +3,12 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const config = {
+  headers: { 
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+};
+
 export default function GradeUpload() {
   const { id } = useParams();
   const [course, setCourse] = useState();
@@ -14,7 +20,7 @@ export default function GradeUpload() {
   useEffect(() => {
     const fetchData = async () => {
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.get(`${BACKEND_URL}/facultyView/course?id=${id}`);
+      const response = await axios.get(`${BACKEND_URL}/facultyView/course?id=${id}`,config);
       setCourse(response.data.course);
       setStudents(response.data.students);
     };
@@ -64,10 +70,13 @@ export default function GradeUpload() {
     });
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/grades/add`, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/facultyView/grades/add`, {
         grades,
-      });
+      },config);
       console.log("Grades uploaded successfully", response);
+      if(response.status===201){
+        alert("Uploaded Successfully");
+      }
     } catch (err) {
       console.error("Error uploading grades", err);
     }

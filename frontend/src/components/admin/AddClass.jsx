@@ -3,6 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeftIcon } from '@primer/octicons-react';
 
+const config = {
+  headers: { 
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+};
+
 export default function AddClass() {
   const [facultyList, setFacultyList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +17,8 @@ export default function AddClass() {
     const fetchData = async () => {
       try {
         const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-        const response = await axios.get(`${BACKEND_URL}/adminView/faculties`);
+        
+        const response = await axios.get(`${BACKEND_URL}/admin/faculties`,config);
         setFacultyList(response.data);
       } catch (error) {
         console.error("Failed to fetch faculty list:", error);
@@ -44,10 +51,10 @@ export default function AddClass() {
 
     try {
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.post(`${BACKEND_URL}/class/add`, classData);
+      const response = await axios.post(`${BACKEND_URL}/admin/addClass`, classData,config);
 
       if (response.status === 201) {
-        alert("Class Added");
+        alert("Class Added Successfully!");
         event.target.reset(); // Clear form after successful submit
       }
     } catch (err) {

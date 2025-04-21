@@ -3,6 +3,12 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 
+const config = {
+  headers: { 
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+};
+
 export default function AttendanceUpload() {
   const { id } = useParams();
   const [classData, setClassData] = useState(null);
@@ -16,7 +22,7 @@ export default function AttendanceUpload() {
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
       try {
-        const response = await axios.get(`${BACKEND_URL}/facultyView/class?id=${id}`);
+        const response = await axios.get(`${BACKEND_URL}/facultyView/class?id=${id}`,config);
         const session = response.data.sessions?.[0];
         const studs = response.data.students;
 
@@ -48,11 +54,11 @@ export default function AttendanceUpload() {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
     try {
-      await axios.post(`${BACKEND_URL}/class/addAttendance`, {
+      await axios.post(`${BACKEND_URL}/facultyView/addAttendance`, {
         attendanceSessionId: classData._id,
         presentStudents: present,
         absentStudents: absent,
-      });
+      },config);
 
       setMessage("✅ Attendance submitted successfully!");
     } catch (error) {

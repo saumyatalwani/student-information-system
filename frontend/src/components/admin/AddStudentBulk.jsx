@@ -4,6 +4,12 @@ import { Link } from "react-router-dom";
 import { ChevronLeftIcon } from "@primer/octicons-react";
 import Papa from "papaparse";
 
+const config = {
+  headers: { 
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+};
+
 export default function AddStudent() {
   const [csvFile, setCsvFile] = useState(null);
   const [parsedData, setParsedData] = useState([]);
@@ -39,7 +45,7 @@ export default function AddStudent() {
 
     try {
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-      const res = await axios.post(`${BACKEND_URL}/auth/register/students/bulk`, students);
+      const res = await axios.post(`${BACKEND_URL}/admin/register/students/bulk`, students,config);
 
       if (res.status === 201) {
         alert(`${res.data.insertedCount} students added successfully!`);

@@ -5,6 +5,13 @@ import { getUserFromToken } from "../../utils/auth";
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const hours = Array.from({ length: 9 }, (_, i) => 9 + i); // 9am to 6pm
 
+const config = {
+  headers: { 
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+};
+
+
 export default function Calendar() {
   const [classSchedule, setSchedule] = useState([]);
   const [sem, setSem] = useState(
@@ -17,7 +24,7 @@ export default function Calendar() {
         const user = getUserFromToken();
         const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
         const url = `${BACKEND_URL}/studentView/schedule?div=${user.division}&semester=${sem}`;
-        const response = await axios.get(url);
+        const response = await axios.get(url,config);
         setSchedule(response.data);
       } catch (error) {
         console.error("Error fetching schedule:", error);
