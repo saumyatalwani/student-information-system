@@ -4,6 +4,9 @@ const { AttendanceSession,Lecture } = require("../models/class");
 const { finalGrade } = require("../models/grades")
 
 const router = express.Router();
+const { authorizeRoles } = require('../middleware/verify');
+
+router.use(authorizeRoles('student'))
 
 router.get('/attendance', async (req, res) => {
     try {

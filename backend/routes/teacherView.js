@@ -5,6 +5,9 @@ const { Student } = require("../models/users")
 const { grades } = require('../models/grades');
 
 const router = express.Router();
+const { authorizeRoles } = require('../middleware/verify');
+
+router.use(authorizeRoles('faculty'))
 
 function mapClassData(classes) {
     // Helper function to convert 12-hour time to 24-hour time
@@ -68,6 +71,7 @@ router.get("/schedule",async(req,res)=>{
     ])
 
     const data = mapClassData(classes)
+    console.log(classes)
 
     res.status(200).json(data);
 })
@@ -177,5 +181,57 @@ router.get('/grades', async (req, res) => {
   }
 });
 
+router.post("/addAttendance", async (req,res)=> {
+  try {
+      const { attendanceSessionId, presentStudents, absentStudents } = req.body;
+
+      if (!attendanceSessionId || !Array.isArray(presentStudents) || !Array.isArray(absentStudents)) {
+          return res.status(400).json({ error: "Missing or invalid fields in request body" });
+      }
+
+      const session = await AttendanceSession.findById(attendanceSessionId);
+
+      if (!session) {
+          return res.status(404).json({ error: "Attendance session not found" });
+      }
+
+      session.presentStudents = presentStudents;
+      session.absentStudents = absentStudents;
+
+      await session.save();
+
+      res.status(200).json({ message: "Attendance updated successfully", session });
+  } catch (err) {
+      console.error("Error in /addAttendance:", err);
+      res.status(500).json({ error: "Failed to update attendance" });
+  }
+})
+
+router.post('/grades/add', async (req,res)=>{
+  try{
+      const grds = req.body.grades; 
+      
+      if (!Array.isArray(grds) || grds.length === 0) {
+          return res.status(400).json({ message: 'No grades provided or invalid format' });
+      }
+
+      for (let grade of grds) {
+          if (!grade.student || !grade.classRef || !grade.examType || !grade.marksObtained || !grade.totalMarks) {
+            return res.status(400).json({ message: 'Each grade must include student, classRef, examType, marksObtained, and totalMarks' });
+          }
+
+          if (!['Internal', 'Mid-Semester', 'End-Semester'].includes(grade.examType)) {
+              return res.status(400).json({ message: `Invalid examType: ${grade.examType}. Must be one of 'Internal', 'Mid-Semester', 'End-Semester'` });
+          }
+      }
+
+      const result = await grades.insertMany(grds);
+
+      return res.status(201).json({ message: 'Grades added successfully', data: result });
+  } catch(err){
+      console.error('Error adding grades:', error);
+      return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+})
 
 module.exports=router
