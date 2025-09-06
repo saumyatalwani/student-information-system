@@ -18,6 +18,7 @@ import AddStudent from "./components/admin/AddStudent";
 import AddStudentBulk from "./components/admin/AddStudentBulk";
 import AddClass from "./components/admin/AddClass";
 import Generate from "./components/admin/Generate";
+import Unauthorized from "./components/unauthorized";
 
 function App() {
 
@@ -47,6 +48,7 @@ function App() {
         <Route path="add/class" element={<AddClass/>}/>
         <Route path="generate" element={<Generate/>}/>
       </Route>
+      <Route path="/unauthorized" element={<Unauthorized/>}></Route>
     </Routes>
     </>
   )

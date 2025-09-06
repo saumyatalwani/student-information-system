@@ -99,62 +99,58 @@ router.get('/attendance/subject', async (req, res) => {
             },
             {
                 $lookup: {
-                    from: "classes",  // Lookup the "classes" collection
-                    localField: "classRef",  // The field in the AttendanceSession
-                    foreignField: "_id",  // The field in the "classes" collection
-                    as: "classData"  // Put the result in "classData"
+                    from: "classes",
+                    localField: "classRef",
+                    foreignField: "_id",
+                    as: "classData"
                 }
             },
-            { $unwind: "$classData" },  // Unwind the classData array
+            { $unwind: "$classData" },
             { $match: { 
                 "classData.division": div.toString(),
-                "classData._id": new mongoose.Types.ObjectId(subjectRef)  // Correctly use ObjectId
+                "classData._id": new mongoose.Types.ObjectId(subjectRef)
             }},
-            { $sort: { "date": 1 } },  // Sort classes chronologically by the date in AttendanceSession
+            { $sort: { "date": 1 } },
             {
                 $group: {
-                    _id: "$classRef",  // Group by classRef (subject)
-                    totalClasses: { $sum: 1 },  // Count total classes for this subject
+                    _id: "$classRef",
+                    totalClasses: { $sum: 1 },
                     subjectName: { $first: "$classData.subject" },
                     classes: { $push: { 
-                        date: "$date",  // Use the date from AttendanceSession
+                        date: "$date",
                         attended: { 
-                            $in: [new mongoose.Types.ObjectId(id), "$presentStudents"]  // Check if student is present
+                            $in: [new mongoose.Types.ObjectId(id), "$presentStudents"]
                         }
-                    }}  // List of classes attended/not attended by the student
+                    }}
                 }
             }
         ]);
 
         console.log(classes);
-        // Calculate the attendance percentage for the individual subject
         let totalClassesCount = 0;
         let attendedClassesCount = 0;
 
         const attendanceDetails = [];
 
-        // Extract attendance details from the classes
         classes.forEach(cls => {
             cls.classes.forEach(c => {
                 attendanceDetails.push({
-                    date: c.date,  // Ensure the date from AttendanceSession is included
+                    date: c.date,
                     attended: c.attended
                 });
             });
 
-            // Calculate total and attended classes
             attendedClassesCount += attendanceDetails.filter(c => c.attended).length;
             totalClassesCount += cls.totalClasses;
         });
 
         const attendancePercentage = (attendedClassesCount / totalClassesCount) * 100;
-        // Return the result with the structure you need
         const payload = {
             totalClasses: totalClassesCount,
             attendedClasses: attendedClassesCount,
             totalAttendancePercentage: attendancePercentage,
             subject: classes[0]?.subjectName ?? "Unknown Subject",
-            attendanceDetails // Include only the date and attendance status
+            attendanceDetails
         };
 
         res.status(200).json(payload);
@@ -286,7 +282,6 @@ function mapLecturesToCalendarFormat(lectures) {
     });
   }
   
-  // Helper to convert "10:00 AM" => 10, "2:00 PM" => 14
   function convertTo24Hour(timeStr) {
     const [time, modifier] = timeStr.split(" ");
     let [hours, minutes] = time.split(":").map(Number);

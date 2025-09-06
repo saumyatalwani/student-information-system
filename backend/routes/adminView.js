@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const {Faculty,Student} = require('../models/users')
 const {Lecture,AttendanceSession} = require('../models/class')
+const {grades,finalGrade} = require('../models/grades')
 const { authorizeRoles } = require('../middleware/verify');
 const moment = require('moment-timezone');
 const bcrypt = require('bcrypt')
@@ -167,6 +168,7 @@ const calculateFinalGrade = (grades, courseType) => {
   
       totalMarks = 25 + 25 + 50;
       marksObtained = internalMarks + midSemesterMarks + endSemesterMarks;
+      console.log(marksObtained)
     } else if (courseType === 'Practical') {
       // Other courses calculation
       const internalMarks = grades.internal * 50; // Convert internal marks to 50

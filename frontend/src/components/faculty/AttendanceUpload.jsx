@@ -87,7 +87,7 @@ export default function AttendanceUpload() {
       <h2>{new Date(date).toLocaleDateString()} - {time}</h2>
 
       <h1 className="text-2xl font-bold my-5">Students</h1>
-      <div className="space-y-4">
+      <div className="space-y-4 flex flex-wrap">
         {students.map((student) => (
           <div key={student._id} className="p-4 rounded-md shadow-sm w-fit">
             <h1 className="font-semibold">

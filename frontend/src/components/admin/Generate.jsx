@@ -78,7 +78,7 @@ export default function Generate() {
     try {
       const response = await axios.post(`${BACKEND_URL}/admin/grades/final`, {
         classRef: selectedCourseObj._id,
-        type: selectedCourseObj.type,
+        courseType: selectedCourseObj.type,
       },config);
 
       if (response.status === 201) {
