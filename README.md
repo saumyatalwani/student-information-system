@@ -4,8 +4,6 @@ This project provides a unified codebase for managing critical aspects of school
 
 The system empowers educators, students, and administrators with features such as real-time attendance tracking, grade management, and secure access to academic records. With role-based authentication, data integrity and privacy are always safeguarded.
 
-Built with modern web technologies, the monorepo demonstrates best practices in modular architecture, API-driven design, and cross-service integration. Whether you’re exploring scalable monorepo structures, working with full-stack applications, or learning how to manage complex school data systems, this repository serves as a comprehensive resource for practical insights and real-world implementation.
-
 **Tech Stack:** React, Express, MongoDB, Tailwind CSS
 
 ## Index
@@ -246,6 +244,82 @@ Responses
 
 ---
 
+#### **GET** `/faculty/class`
+
+Fetch class and student details for a specific attendance session.
+
+**Query Parameters**
+| Name | Type | Required | Description |
+|------|------|-----------|-------------|
+| `id` | string | ✅ Yes | Attendance session ID |
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|--------------|------------------|
+| **200** | ✅ Success | Returns session and student details | ```json { "sessions": [ {...} ], "students": [ {...} ] } ``` |
+| **404** | ❌ Error | Session not found | `{"message": "Session not found"}` |
+| **500** | ❌ Error | Server error | `{"error": "Something went wrong"}` |
+
+---
+
+#### **GET** `/faculty/courses`
+
+Fetch all lectures taught by a specific faculty for a given semester.
+
+**Query Parameters**
+| Name | Type | Required | Description |
+|------|------|-----------|-------------|
+| `id` | string | ✅ Yes | Faculty ID |
+| `sem` | number | ✅ Yes | Semester number |
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|--------------|------------------|
+| **200** | ✅ Success | Returns list of lectures | ```json [ { "_id": "...", "faculty": "...", "semester": 5, ... } ] ``` |
+| **500** | ❌ Error | Server error | `{"error": "Error message"}` |
+
+---
+
+#### **GET** `/faculty/course`
+
+Fetch details of a specific course and the students enrolled in it.
+
+**Query Parameters**
+| Name | Type | Required | Description |
+|------|------|-----------|-------------|
+| `id` | string | ✅ Yes | Lecture (course) ID |
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|--------------|------------------|
+| **200** | ✅ Success | Returns course and student details | ```json { "course": {...}, "students": [ {...} ] } ``` |
+| **404** | ❌ Error | Lecture not found | `{"error": "Lecture not found"}` |
+| **500** | ❌ Error | Server error | `{"error": "Error message"}` |
+
+---
+
+#### **GET** `/faculty/grades`
+
+Fetch grades for all students in a class.
+
+**Query Parameters**
+| Name | Type | Required | Description |
+|------|------|-----------|-------------|
+| `id` | string | ✅ Yes | Class ID |
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|--------------|------------------|
+| **200** | ✅ Success | Returns list of grades with student info | ```json [ { "_id": "...", "student": "...", "marksObtained": 85, "totalMarks": 100, "studentInfo": { "name": "John Doe", ... } } ] ``` |
+| **404** | ❌ Error | Class not found or no grades | `{"error": "Lecture not found"}` |
+| **500** | ❌ Error | Server error | `{"error": "Error message"}` |
+
+---
+
 ### Admin Routes
 
 #### **POST** `/admin/register/faculty`
@@ -291,3 +365,125 @@ Responses
 
 ---
 
+#### **POST** `/admin/register/students/bulk`
+
+Register multiple students at once.
+
+**Request Body**
+- Expects an **array** of student objects with the following fields:
+
+| Field | Type | Required | Description |
+|--------|------|-----------|-------------|
+| `email` | string | ✅ Yes | Student email |
+| `password` | string | ✅ Yes | Plaintext password (will be hashed) |
+| `rollNo` | string | ✅ Yes | Unique roll number |
+| `division` | string | ✅ Yes | Division name/code |
+| `firstName` | string | ❌ No | Student's first name |
+| `lastName` | string | ❌ No | Student's last name |
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|-------------|------------------|
+| **201** | ✅ Success | Students registered successfully | ```json { "message": "10 students registered successfully.", "insertedCount": 10 } ``` |
+| **400** | ❌ Error | Invalid input or duplicate records | ```json { "error": "Some students could not be registered due to duplicate emails or roll numbers.", "duplicateCount": 3 } ``` |
+| **500** | ❌ Error | Server error | `{"error": "Bulk student registration failed."}` |
+
+---
+
+#### **POST** `/admin/grades/final`
+
+Calculate and save final grades for a class.
+
+**Request Body**
+
+| Field | Type | Required | Description |
+|--------|------|-----------|-------------|
+| `classRef` | string | ✅ Yes | Class ID |
+| `courseType` | string | ✅ Yes | Type of course (`Theory` or `Practical`) |
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|-------------|------------------|
+| **201** | ✅ Success | Final grades calculated and saved | ```json { "message": "Final grades calculated and saved successfully for the class", "insertedCount": 20 } ``` |
+| **404** | ❌ Error | No grades found for the class | `{"message": "No grades found for this class"}` |
+| **500** | ❌ Error | Server error | `{"message": "Server error", "error": "err.message"}` |
+
+---
+
+#### **POST** `/admin/sessions/generate`
+
+Generate attendance sessions automatically between given dates for all lectures.
+
+**Request Body**
+
+| Field | Type | Required | Description |
+|--------|------|-----------|-------------|
+| `startDate` | string | ✅ Yes | Start date (YYYY-MM-DD) |
+| `endDate` | string | ✅ Yes | End date (YYYY-MM-DD) |
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|-------------|------------------|
+| **201** | ✅ Success | Sessions generated | ```json { "message": "Generated 120 attendance sessions for semester." } ``` |
+| **400** | ❌ Error | Invalid date range | `{"error": "Start date must be before end date"}` |
+| **500** | ❌ Error | Server error | `{"error": "Failed to generate attendance sessions"}` |
+
+---
+
+#### **GET** `/admin/faculties`
+
+Fetch all faculty members.
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|-------------|------------------|
+| **200** | ✅ Success | Returns list of faculties | ```json [ { "_id": "...", "name": "Dr. Smith", "email": "smith@college.edu" } ] ``` |
+| **500** | ❌ Error | Server error | `{"error": "Error message"}` |
+
+---
+
+#### **GET** `/admin/courses`
+
+Fetch all available courses/lectures.
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|-------------|------------------|
+| **200** | ✅ Success | Returns list of lectures | ```json [ { "_id": "...", "subject": "Math", "faculty": "...", "semester": 5, ... } ] ``` |
+| **500** | ❌ Error | Server error | `{"error": "Error message"}` |
+
+---
+
+#### **POST** `/admin/addClass`
+
+Add a new lecture/class to the system.
+
+**Request Body**
+
+| Field | Type | Required | Description |
+|--------|------|-----------|-------------|
+| `subject` | string | ✅ Yes | Subject name |
+| `subjectCode` | string | ✅ Yes | Subject code |
+| `faculty` | string | ✅ Yes | Faculty ID |
+| `division` | string | ✅ Yes | Division name/code |
+| `day` | string | ✅ Yes | Comma-separated list of weekdays (e.g., "Monday, Wednesday") |
+| `time` | string | ✅ Yes | Comma-separated list of times corresponding to days |
+| `batch` | string | ❌ No | Batch name/code |
+| `semester` | number | ✅ Yes | Semester number |
+| `type` | string | ✅ Yes | Course type (`Theory` or `Practical`) |
+| `credits` | number | ✅ Yes | Number of credits |
+
+**Responses**
+
+| Status Code | Type | Description | Response Example |
+|--------------|------|-------------|------------------|
+| **201** | ✅ Success | Lecture added successfully | `{"message": "Lecture Added Successfully!"}` |
+| **400** | ❌ Error | Mismatch in days and times | `{"error": "Number of days and times must match."}` |
+| **500** | ❌ Error | Server error | `{"error": "Error message"}` |
+
+---
