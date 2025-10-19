@@ -26,9 +26,19 @@ The system empowers educators, students, and administrators with features such a
     - [GET /faculty/schedule](#get-facultyschedule)
     - [POST /faculty/addAttendance](#post-facultyaddattendance)
     - [POST /faculty/grades/add](#post-facultygradesadd)
+    - [POST /faculty/class](#post-facultyclass)
+    - [GET /faculty/courses](#post-facultycourses)
+    - [GET /faculty/course](#post-facultycourses)
+     - [GET /faculty/grades](#post-facultygrades)
   - [Admin Routes](#admin-routes)
     - [POST /admin/register/faculty](#post-adminregisterfaculty)
     - [POST /admin/register/student](#post-adminregisterstudent)
+    - [POST /admin/register/students/bulk](#post-adminregisterstudentsbulk)
+    - [POST /admin/grades/final](#post-admingradesfinal)
+    - [POST /admin/sessions/generate](#post-adminsessionsgenerate)
+    - [GET /admin/faculties](#post-adminfaculties)
+    - [GET /admin/courses](#post-admincourses)
+    - [GET /admin/addClass](#post-adminaddClass)
 
 ---
 
